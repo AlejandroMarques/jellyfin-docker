@@ -1,17 +1,37 @@
 services:
   jellyfin:
-    image: jellyfin/jellyfin
+    build: .
     container_name: jellyfin
     network_mode: "host"
+    privileged: true  # Esto da privilegios elevados al contenedor
+    cap_add:
+      - SYS_ADMIN  # Añadir esta capacidad para realizar operaciones de montaje
     volumes:
       - jellyfin-config:/config
       - jellyfin-cache:/cache
-      - "/mnt/z/Library/Películas:/films"
-      - "/mnt/z/Library/Series:/series"
-    restart: "unless-stopped"
+      - "${NAS_MOUNT_POINT}:/mnt/nas"
+    environment:
+      - NAS_IP=${NAS_IP}
+      - NAS_SHARE=${NAS_SHARE}
+      - NAS_USER=${NAS_USER}
+      - NAS_PASSWORD=${NAS_PASSWORD}
+      - NAS_MOUNT_POINT=${NAS_MOUNT_POINT}
+    restart: unless-stopped
+
+  tailscale:
+    image: tailscale/tailscale
+    container_name: tailscale
+    privileged: true
+    environment:
+      - TS_AUTHKEY=${TAILSCALE_AUTHKEY}
+    volumes:
+      - /var/lib/tailscale:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    network_mode: "host"
+    restart: unless-stopped
+
 volumes:
   jellyfin-config:
     driver: local
   jellyfin-cache:
     driver: local
-      
