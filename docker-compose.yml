@@ -18,7 +18,6 @@ services:
       - NAS_USER=${NAS_USER}
       - NAS_PASSWORD=${NAS_PASSWORD}
       - NAS_MOUNT_POINT=${NAS_MOUNT_POINT}
-      - JELLYFIN_PublishedServerUrl=http://alex-jellyfin.com
     restart: unless-stopped
 
   tailscale:
